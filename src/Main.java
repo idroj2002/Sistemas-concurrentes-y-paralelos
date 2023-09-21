@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class Main {
@@ -17,6 +19,9 @@ public class Main {
     private static ConcurrentLinkedDeque<File> filesList;
 
     private static int totalFiles;
+    private static Map<Character,Integer> resultsMap = new TreeMap<>();
+    private static ArrayList<ProcesarFicherosCon> runnables;
+    private static ArrayList<Thread> threads;
 
     public static File getNextFile() {
         return filesList.poll();
@@ -25,6 +30,8 @@ public class Main {
     public static void main(String[] args) {
         totalFiles = 0;
         filesList = new ConcurrentLinkedDeque<File>();
+        runnables = new ArrayList<ProcesarFicherosCon>();
+        threads = new ArrayList<Thread>();
         path = "./Input";
         extension = ".txt";
         if (args.length>0)
@@ -65,22 +72,36 @@ public class Main {
     }
 
     public static void ProcesarFicheros() {
-        ArrayList<Thread> threads = new ArrayList<Thread>();
         for (int i = 0; i < N; i++) {
             ProcesarFicherosCon task = new ProcesarFicherosCon();
             Thread t = Thread.startVirtualThread(task);
+            runnables.add(task);
             threads.add(t);
-        }
-        for (int i = 0; i < N; i++) {
-            try {
-                threads.get(i).join();
-            } catch (InterruptedException e) {
-                System.out.println(e.getStackTrace());
-            }
         }
     }
 
     public static void MostrarResultados() {
+        for (int i = 0; i < N; i++) {
+            try {
+                ProcesarFicherosCon t = runnables.get(i);
+                threads.get(i).join();
+                Map<Character,Integer> threadMap = t.getResultsMap();
+                for (Map.Entry<Character,Integer> e : threadMap.entrySet()) {
+                    Integer value = resultsMap.putIfAbsent(e.getKey(), e.getValue());
+                    if (value != null) {
+                        // Si existe, incrementar el número de ocurrencias para este carácter.
+                        resultsMap.put(e.getKey(), value + e.getValue());
+                    }
+                }
+
+                for (Map.Entry<Character,Integer> e : resultsMap.entrySet()) {
+                    System.out.println("Carácter " + e.getKey() + " -> número de ocurrencias: " + e.getValue());
+                }
+            } catch (InterruptedException e) {
+                System.out.println(e.getStackTrace());
+            }
+        }
+
 
     }
 }

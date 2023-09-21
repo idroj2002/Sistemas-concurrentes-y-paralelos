@@ -9,12 +9,14 @@ import java.util.TreeMap;
 
 public class ProcesarFicherosCon implements Runnable {
 
-    private Map<Character,Integer> resultsMap = new TreeMap<>();
+    private Map<Character, Integer> resultsMap = new TreeMap<>();
     private int totalCaracteres;
 
     public ProcesarFicherosCon() {
         totalCaracteres = 0;
     }
+
+    public Map<Character, Integer> getResultsMap() { return resultsMap; }
 
     @Override
     public void run() {
