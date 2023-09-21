@@ -2,8 +2,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -20,7 +18,7 @@ public class ProcesarFicherosCon implements Runnable {
 
     @Override
     public void run() {
-        File file = Main.getNextFile();
+        File file = ProcesarDirectorios.getNextFile();
         while (file != null) {
             FileReader fr = null;
             try {
@@ -55,7 +53,7 @@ public class ProcesarFicherosCon implements Runnable {
                 }
             }
 
-            file = Main.getNextFile();
+            file = ProcesarDirectorios.getNextFile();
         }
     }
 }
